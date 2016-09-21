@@ -5,12 +5,18 @@
     <title>Todo</title>
 </head>
 <body>
-    <div id="header">
-        <input type="checkbox" name="" id="headCheck" />
-        <input type="text" name="head" id="headText" />
-        <input type="submit" value="Enter" />
-    </div>
+    <form onsubmit="addTask()">
+        <input type="text" name="head" id="headText" value="" placeholder="Input your task and press Enter" autofocus />
+    </form>
+        <div id="list">
+            <ol></ol>
+        </div>
+
+    <script>
+//        var list = document.querySelector("#list");
+    </script>
 
 
+    <script type="text/javascript" src="todo.js"></script>
 </body>
 </html>
