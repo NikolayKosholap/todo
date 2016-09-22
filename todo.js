@@ -1,10 +1,10 @@
 var list = document.querySelector("#list ol");
 var idMask = 'id_';
+getResult();
 function addTask() {
     var value = document.getElementById('headText').value;
     if (!value) alert("введіть текст!");
     addToList(value);
-    getResult();
 }
 function addToList(value) {
 
