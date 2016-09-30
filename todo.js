@@ -1,53 +1,105 @@
-var list = document.querySelector("#list ol");
-var idMask = 'id_';
-getResult();
-
-function addTask() {
-    var value = document.getElementById('headText').value;
-    if (!value) alert("введіть текст!");
-    addToList(value);
+function obj(){
+    var valueObj = {};
+    var todoStr = localStorage.getItem('todo');
+    if (todoStr !== null) {
+        valueObj = JSON.parse(todoStr);    }
+    return valueObj;
 }
 
-function addToList(value) {
-    var id = 0;
+function addTask() {
+    var list = document.querySelector('#list ol');
+    var newVal = document.getElementById('headText').value;
+    if (!newVal) {
+        alert("введіть текст!");
+        return false;
+    }
+    var valueObj = new obj();
+    var iden = 0;
     for(var i = 0; i < list.children.length; i++){
-        var newId = list.children[i].getAttribute('data-item').slice(3);
-            if(newId > id) id = newId;
-    }id++;
-    localStorage.setItem(idMask+id,value);
-    var child = document.createElement('li');
-    child.innerText = '<div class="delete" id="' + idMask+id +'">X</div>' + value;
-    child.setAttribute('id', idMask+id);
-    child.setAttribute('data-item', idMask+id);
-    list.insertBefore(child, document.body.nextSibling);
+        var newId = list.children[i].getAttribute('id').slice(3);
+        if(newId > iden) iden = newId;
+    }iden++;
+    valueObj[iden] = {};
+    valueObj[iden].title = newVal;
+    localStorage.setItem('todo', JSON.stringify(valueObj));
+    getResult();
 }
 
 function getResult() {
-    var local = localStorage.length;
-    if(local > 0){
-        for(var i = 0; i < local; i++){
-            var key = localStorage.key(i);
-            if(key.indexOf(idMask) == 0){
-                var child = document.createElement('li');
-                child.innerHTML = '<div class="delete" id="' + key +'">X</div>' +  localStorage.getItem(key);
-                child.setAttribute('id', key);
-                child.setAttribute('data-item', key);
-                list.insertBefore(child, document.body.nextSibling);
-            }
-        }
+    var list = document.querySelector('#list ol');
+    var valueObj = new obj();
+    for(var i = 1; i < Object.keys(valueObj).length+1; i++){
+        var child = document.createElement('li');
+        child.innerHTML =
+            '<div id ="'
+            + 'id_'
+            + i
+            + '" class="delete">X</div><input type="checkbox"/>'
+            + valueObj[i].title
+            + '<div id ="' + 'id_'
+            + i
+            + '" class="change">Change</div>';
+        child.setAttribute('id', 'id_'+i);
+        child.setAttribute('class', 'elem');
+        list.insertBefore(child, list.firstChild);
+    }
+    //call deleteEl
+    var callDelete = document.getElementsByClassName('delete');
+    for(var i = 0; i < callDelete.length; i++){
+        callDelete[i].addEventListener('click', deleteEl);
+    }
+    //call edit
+    var callEdit = document.getElementsByClassName('change');
+    for(var i = 0; i < callEdit.length; i++){
+        callEdit[i].addEventListener('click',editArea);
     }
 }
 
 function deleteEl(){
     var getId = this.getAttribute('id');
+    var valueObj = obj();
     var idLi = getId + '';
     idLi = document.getElementById(idLi);
-    localStorage.removeItem(idLi.getAttribute('data-item'));
+    var idRemove = getId.slice(3);
+    delete valueObj[idRemove];
     idLi.remove();
+    localStorage.setItem('todo', JSON.stringify(valueObj));
 }
-var deleteDiv = document.getElementsByClassName('delete');
-    for(var i = 0; i < deleteDiv.length; i++){
-        deleteDiv[i].addEventListener('click', deleteEl);
-    }
 
+function editArea() {
+    var valueObj = new obj();
+    var getId = this.getAttribute('id');
+    getId = getId+'';
+    var getNum = getId.slice(3);
+    var linkLi = document.getElementById(getId);
+    var parentDiv = linkLi.parentNode;
+    var child = document.createElement('li');
+    child.innerHTML =
+        '<div id ="'
+        + 'id_'
+        + getNum
+        + '" class="delete">X</div><input type="checkbox"/>'
+        + '<form onsubmit="edit(\''
+        + getId
+        +'\')"><input type="text" value="' ///невеликі форми, зі змогою відправки у функцію
+        + valueObj[getNum].title
+        +'" class="changeVal" autofocus /></form>';
+    child.setAttribute('id', 'id_'+getNum);
+    child.setAttribute('class', 'elem');
+    parentDiv.replaceChild(child, linkLi);
+
+}
+
+function edit(getId) {
+    var idNum = getId.slice(3);
+    alert(getId);
+    var val = document.getElementById('\''+getId+'\'').value;
+    alert(val);
+    var valueObj = obj();
+    valueObj[idNum].title = val;
+    localStorage.setItem('todo', JSON.stringify(valueObj));
+    getResult();
+}
+
+window.onload = getResult;
 
