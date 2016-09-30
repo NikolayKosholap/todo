@@ -78,28 +78,27 @@ function editArea() {
         '<div id ="'
         + 'id_'
         + getNum
-        + '" class="delete">X</div><input type="checkbox"/>'
-        + '<form onsubmit="edit(\''
+        + '" class="delete">X</div><input type="checkbox"/><div id="changeUni" onkeydown="edit(\''
         + getId
-        +'\')"><input type="text" value="' ///невеликі форми, зі змогою відправки у функцію
+        +'\',event)" contenteditable="true">'
         + valueObj[getNum].title
-        +'" class="changeVal" autofocus /></form>';
+        + '</div>';
     child.setAttribute('id', 'id_'+getNum);
     child.setAttribute('class', 'elem');
     parentDiv.replaceChild(child, linkLi);
-
 }
 
-function edit(getId) {
-    var idNum = getId.slice(3);
-    alert(getId);
-    var val = document.getElementById('\''+getId+'\'').value;
-    alert(val);
-    var valueObj = obj();
-    valueObj[idNum].title = val;
-    localStorage.setItem('todo', JSON.stringify(valueObj));
-    getResult();
+function edit(getId,e) {
+    if(e.keyCode === 13){
+        var idNum = getId.slice(3);
+        var val = document.getElementById('changeUni').innerHTML;
+        var valueObj = obj();
+        valueObj[idNum].title = val;
+        localStorage.setItem('todo', JSON.stringify(valueObj));
+        getResult();
+        location.reload();
+    }
+    return false;
 }
 
 window.onload = getResult;
-
